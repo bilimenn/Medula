@@ -24,5 +24,5 @@
 void Trace_Init( void );
 void Trace_Print( const char * format, ...  );
 void Trace_Out( void );
-
+void Trace_Init_Status( const char *Title , int iStatus );
 #endif /* TRACE_H_ */
