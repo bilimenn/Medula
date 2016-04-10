@@ -21,8 +21,17 @@
 #ifndef TRACE_H_
 #define TRACE_H_
 #define USE_FULL_ASSERT 1
+
+#define TRACE_LOG_APP		0
+#define TRACE_LOG_ERR		1
+#define TRACE_LOG_WNG	2
+#define TRACE_LOG_DBG		3
+#define TRACE_LOG_INF		4
+
 void Trace_Init( void );
-void Trace_Print( const char * format, ...  );
+void Trace_Raw( const char * format, ...  );
 void Trace_Out( void );
 void Trace_Init_Status( const char *Title , int iStatus );
+void Trace_log(  const char *pcModuleName, int iErrorLevel , const char *pcFuncname , int iLine , const char * format, ... );
+
 #endif /* TRACE_H_ */

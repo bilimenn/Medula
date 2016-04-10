@@ -37,9 +37,16 @@
  char tcOutputBufferPing[TRACE_OUTPUT_BUFFER_SIZE];
  char tcOutputBufferPong[TRACE_OUTPUT_BUFFER_SIZE];
  char *pcOutputBuffer=NULL;
-int iIndex = 0;
+ int iIndex = 0;
 
 UART_HandleTypeDef huart6;
+
+	static const char tcLogApp[] = "APP";
+	static const char tcLogError[] = ANSI_COLOR_RED"ERR"ANSI_COLOR_RESET;
+	static const char tcLogWarning[] = ANSI_COLOR_YELLOW"WRN"ANSI_COLOR_RESET;
+	static const char tcLogDebug[] = ANSI_COLOR_BLUE"DBG"ANSI_COLOR_RESET;
+	static const char tcLogInfo[] = ANSI_COLOR_GREEN"INF"ANSI_COLOR_RESET;
+	static const char *pcLogText[TRACE_LOG_INF+1] = {tcLogApp,tcLogError,tcLogWarning,tcLogDebug,tcLogInfo};
 
 void Trace_Init( void )
 {
@@ -47,7 +54,7 @@ void Trace_Init( void )
 	pcOutputBuffer = tcOutputBufferPing;
 }
 
-void Trace_Print( const char * format, ...  )
+void Trace_Raw( const char * format, ...  )
 {
 	int iMaxSize = TRACE_OUTPUT_BUFFER_SIZE - iIndex - 2;
 	int iLastIndex=iIndex,iTickCount=0;
@@ -68,8 +75,6 @@ void Trace_Print( const char * format, ...  )
 			  iIndex += vsnprintf (&pcOutputBuffer[iIndex],TRACE_OUTPUT_BUFFER_SIZE-1,format, args);
 			  iIndex += snprintf(&pcOutputBuffer[iIndex],TRACE_OUTPUT_BUFFER_SIZE-iIndex-1,"Trace wait:%dms\r\n",iTickCount);
 		  }
-		  pcOutputBuffer[TRACE_OUTPUT_BUFFER_SIZE-3]='f';
-		  pcOutputBuffer[TRACE_OUTPUT_BUFFER_SIZE-2]=0;
 		  va_end (args);
 	  }
 
@@ -78,10 +83,22 @@ void Trace_Print( const char * format, ...  )
 void Trace_Init_Status( const char *Title , int iStatus )
 {
 	if( iStatus )
-		Trace_Print("%X %d %-40s ["ANSI_COLOR_RED"Error"ANSI_COLOR_RESET"]\r\n",(int)pcOutputBuffer,iIndex,Title);
+		Trace_Raw("%X %d %-40s ["ANSI_COLOR_RED"Error"ANSI_COLOR_RESET"]\r\n",(int)pcOutputBuffer,iIndex,Title);
 	else
-		Trace_Print("%X %d %-40s ["ANSI_COLOR_GREEN"Ok"ANSI_COLOR_RESET"]\r\n",(int)pcOutputBuffer,iIndex,Title);
+		Trace_Raw("%X %d %-40s ["ANSI_COLOR_GREEN"Ok"ANSI_COLOR_RESET"]\r\n",(int)pcOutputBuffer,iIndex,Title);
 	Trace_Out();
+}
+
+void Trace_log(  const char *pcModuleName, int iErrorLevel , const char *pcFuncname , int iLine , const char * format, ... )
+{
+	char tcLogLineBuffer[80];
+	va_list args;
+	va_start (args, format);
+	if( iErrorLevel > TRACE_LOG_INF)
+		iErrorLevel = 0;
+	vsnprintf(tcLogLineBuffer,sizeof(tcLogLineBuffer),format,args);
+	Trace_Raw("[%-8s][%s][%s():%d] %s\r\n",pcModuleName,pcLogText[iErrorLevel],pcFuncname,iLine,tcLogLineBuffer);
+	va_end (args);
 }
 
 void Trace_Out( void )
