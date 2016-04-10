@@ -34,13 +34,88 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f2xx_hal.h"
-
+extern DMA_HandleTypeDef hdma_usart6_tx;
 
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
 
+void HAL_UART_MspInit(UART_HandleTypeDef* huart)
+{
 
+  GPIO_InitTypeDef GPIO_InitStruct;
+  if(huart->Instance==USART6)
+  {
+    /* Peripheral clock enable */
+    __USART6_CLK_ENABLE();
+  
+    /**USART6 GPIO Configuration    
+    PC7     ------> USART6_RX
+    PG14     ------> USART6_TX 
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_7;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF8_USART6;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_14;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF8_USART6;
+    HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+
+    /* Peripheral DMA init*/
+  
+    hdma_usart6_tx.Instance = DMA2_Stream6;
+    hdma_usart6_tx.Init.Channel = DMA_CHANNEL_5;
+    hdma_usart6_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+    hdma_usart6_tx.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_usart6_tx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_usart6_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    hdma_usart6_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    hdma_usart6_tx.Init.Mode = DMA_NORMAL;
+    hdma_usart6_tx.Init.Priority = DMA_PRIORITY_LOW;
+    hdma_usart6_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    HAL_DMA_Init(&hdma_usart6_tx);
+
+    __HAL_LINKDMA(huart,hdmatx,hdma_usart6_tx);
+
+    /* Peripheral interrupt init*/
+    /* Sets the priority grouping field */
+    HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_0);
+    HAL_NVIC_SetPriority(USART6_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(USART6_IRQn);
+  }
+
+}
+
+void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
+{
+
+  if(huart->Instance==USART6)
+  {
+    /* Peripheral clock disable */
+    __USART6_CLK_DISABLE();
+  
+    /**USART6 GPIO Configuration    
+    PC7     ------> USART6_RX
+    PG14     ------> USART6_TX 
+    */
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_7);
+
+    HAL_GPIO_DeInit(GPIOG, GPIO_PIN_14);
+
+    /* Peripheral DMA DeInit*/
+    HAL_DMA_DeInit(huart->hdmatx);
+
+    /* Peripheral interrupt Deinit*/
+    HAL_NVIC_DisableIRQ(USART6_IRQn);
+  }
+
+}
 
 /* USER CODE BEGIN 1 */
 

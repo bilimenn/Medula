@@ -37,13 +37,34 @@
 #include "stm32f2xx_it.h"
 
 /* External variables --------------------------------------------------------*/
-
+extern DMA_HandleTypeDef hdma_usart6_tx;
+extern UART_HandleTypeDef huart6;
 
 
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
 
+/**
+* @brief This function handles DMA2 Stream6 global interrupt.
+*/
+void DMA2_Stream6_IRQHandler(void)
+{
+	UART_HandleTypeDef* huart = ( UART_HandleTypeDef* )(hdma_usart6_tx.Parent);
 
+  HAL_NVIC_ClearPendingIRQ(DMA2_Stream6_IRQn);
+  HAL_DMA_IRQHandler(&hdma_usart6_tx);
+  huart->State  = HAL_UART_STATE_READY;
+  
+}
+
+/**
+* @brief This function handles USART6 global interrupt.
+*/
+void USART6_IRQHandler(void)
+{
+  HAL_NVIC_ClearPendingIRQ(USART6_IRQn);
+  HAL_UART_IRQHandler(&huart6);
+}
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

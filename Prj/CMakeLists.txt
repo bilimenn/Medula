@@ -47,6 +47,7 @@ add_executable(stm32example.elf
     Src/stm32f2xx_it.c
     Src/stm32f2xx_hal_msp.c
     Src/system_stm32f2xx.c
+    Src/Traces.c
     ${STM32_SOURCES}
     ${STM32_STARTUP_SOURCE}
     )

@@ -22,9 +22,12 @@
 /* Includes ------------------------------------------------------------------*/
 #include <stdint.h>
 #include "stm32f2xx_hal.h"
+#include "Traces.h"
 
 /* Private variables ---------------------------------------------------------*/
+UART_HandleTypeDef huart6;
 
+DMA_HandleTypeDef hdma_usart6_tx;
 /* USER CODE BEGIN 0 */
 uint8_t tucString[]="hello world\n";
 
@@ -32,6 +35,8 @@ uint8_t tucString[]="hello world\n";
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void MX_DMA_Init(void) ;
+void MX_USART6_UART_Init(void);
 
 int main(void)
 {
@@ -53,6 +58,10 @@ int main(void)
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 
   /* Initialize all configured peripherals */
+  MX_DMA_Init();
+  MX_USART6_UART_Init();
+
+  Trace_Init();
 
   HAL_Delay(1000);
   while (1)
@@ -61,6 +70,42 @@ int main(void)
 
   }
   /* USER CODE END 3 */
+
+}
+
+/* USART6 init function */
+void MX_USART6_UART_Init(void)
+{
+
+  huart6.Instance = USART6;
+  huart6.Init.BaudRate = 115200;
+  huart6.Init.WordLength = UART_WORDLENGTH_8B;
+  huart6.Init.StopBits = UART_STOPBITS_1;
+  huart6.Init.Parity = UART_PARITY_NONE;
+  huart6.Init.Mode = UART_MODE_TX;
+  huart6.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart6.Init.OverSampling = UART_OVERSAMPLING_16;
+  HAL_UART_Init(&huart6);
+
+}
+
+
+/** 
+  * Enable DMA controller clock
+  */
+void MX_DMA_Init(void) 
+{
+  /* DMA controller clock enable */
+  __DMA2_CLK_ENABLE();
+  __DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+
+  /* Sets the priority grouping field */
+  HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_0);
+  HAL_NVIC_SetPriority(DMA2_Stream6_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream6_IRQn);
+
 
 }
 
@@ -91,6 +136,9 @@ void SystemClock_Config(void)
   HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3);
 
 }
+
+
+
 
 /* USER CODE BEGIN 4 */
 /*caddr_t _sbrk_r ( int incr )
