@@ -35,6 +35,7 @@ uint8_t tucString[]="hello world\n";
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void MX_GPIO_Init(void);
 void MX_DMA_Init(void) ;
 void MX_USART6_UART_Init(void);
 
@@ -58,19 +59,44 @@ int main(void)
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 
   /* Initialize all configured peripherals */
+    MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART6_UART_Init();
 
   Trace_Init();
-
   HAL_Delay(1000);
+  Trace_Print("Medula control board start...\n\r");
   while (1)
   {
-
+	  Trace_Out();
 
   }
   /* USER CODE END 3 */
 
+}
+
+/** Configure pins as
+        * Analog
+        * Input
+        * Output
+        * EVENT_OUT
+        * EXTI
+*/
+void MX_GPIO_Init(void)
+{
+
+  GPIO_InitTypeDef GPIO_InitStruct;
+
+  /* GPIO Ports Clock Enable */
+  __GPIOE_CLK_ENABLE();
+  __GPIOF_CLK_ENABLE();
+  __GPIOH_CLK_ENABLE();
+  __GPIOC_CLK_ENABLE();
+  __GPIOA_CLK_ENABLE();
+  __GPIOG_CLK_ENABLE();
+  __GPIOB_CLK_ENABLE();
+  __GPIOD_CLK_ENABLE();
+  __GPIOC_CLK_ENABLE();
 }
 
 /* USART6 init function */
@@ -141,11 +167,11 @@ void SystemClock_Config(void)
 
 
 /* USER CODE BEGIN 4 */
-/*caddr_t _sbrk_r ( int incr )
+void * _sbrk_r ( int incr )
 {
 
 	return NULL;
-} */
+} 
 /* USER CODE END 4 */
 
 #ifdef USE_FULL_ASSERT
@@ -171,6 +197,7 @@ void assert_failed(uint8_t* file, uint32_t line)
 	}
 
 }
+
 
 #endif
 

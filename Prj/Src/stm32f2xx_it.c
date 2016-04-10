@@ -44,6 +44,14 @@ extern UART_HandleTypeDef huart6;
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
+/**
+* @brief This function handles System tick timer.
+*/
+void SysTick_Handler(void)
+{
+  HAL_IncTick();
+  HAL_SYSTICK_IRQHandler();
+}
 
 /**
 * @brief This function handles DMA2 Stream6 global interrupt.

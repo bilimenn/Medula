@@ -7,7 +7,7 @@
 # Copyright ISORG 2012 (www.isorg.fr)
 ################################################################################
 
-project(STM32EXAMPLE C ASM NONE )
+project(Bilimenn C ASM NONE )
 #project(<projectname> NONE)
 cmake_minimum_required(VERSION 2.8)
 
@@ -42,7 +42,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DSTM32F207xx -DEE_M24LR64 -DUSE_FULL_ASSERT
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${CMAKE_SOURCE_DIR}/Lkr/stm32f207_flash.ld")
 #set(CMAKE_EXE_LINKER_FLAGS_INIT  "-T${CMAKE_SOURCE_DIR}/lkr/stm32f407vg_flash.ld")
 
-add_executable(stm32example.elf
+add_executable(Billimenn.elf
     Src/main.c
     Src/stm32f2xx_it.c
     Src/stm32f2xx_hal_msp.c
@@ -54,8 +54,8 @@ add_executable(stm32example.elf
 
 target_link_libraries(stm32example.elf ${STM32_LIBRARIES})
 
-add_custom_target(stm32example.hex DEPENDS stm32example.elf COMMAND ${CMAKE_OBJCOPY} -Oihex stm32example.elf stm32example.hex)
-add_custom_target(stm32example.bin DEPENDS stm32example.elf COMMAND ${CMAKE_OBJCOPY} -Obinary stm32example.elf stm32example.bin)
+add_custom_target(stm32example.hex DEPENDS stm32example.elf COMMAND ${CMAKE_OBJCOPY} -Oihex Billimenn.elf Billimenn.hex)
+add_custom_target(stm32example.bin DEPENDS stm32example.elf COMMAND ${CMAKE_OBJCOPY} -Obinary Billimenn.elf Billimenn.bin)
 
 # If STM32 ST-Link Utility is found, add a make target to program the chip
 if(DEFINED STM32_STLINK_CLI_EXECUTABLE)
@@ -63,8 +63,8 @@ if(DEFINED STM32_STLINK_CLI_EXECUTABLE)
     # -Q : quiet mode, no progress bar
     # -V : Verifies that the programming operation was performed successfully.
     # -P : program file (.hex)
-    set(STLINK_CMD ${STM32_STLINK_CLI_EXECUTABLE} -c SWD UR -P ${CMAKE_BINARY_DIR}/stm32example.hex)
-    add_custom_target(program-flash DEPENDS stm32example.hex COMMAND ${STLINK_CMD})
+    set(STLINK_CMD ${STM32_STLINK_CLI_EXECUTABLE} -c SWD UR -P ${CMAKE_BINARY_DIR}/Billimenn.hex)
+    add_custom_target(program-flash DEPENDS Billimenn.hex COMMAND ${STLINK_CMD})
 endif()
 
 
