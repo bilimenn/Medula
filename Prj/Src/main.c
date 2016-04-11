@@ -65,7 +65,7 @@ int main(void)
 
   Trace_Init();
   HAL_Delay(1000);
-  Trace_Print("Medula control board start...\n\r");
+  Trace_Raw("Medula control board start...\n\r");
   while (1)
   {
 	  Trace_Out();
