@@ -24,7 +24,8 @@ set(STM32_FAMILY "STM32F2xx") 	# Support "STM32F10x", "STM32F2xx", "STM32F4xx"
 set(STM32_LIBRARY_ROOT_DIR "Drv" )
 include(CMake/STM32.cmake)
 
-
+set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
+set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/Inc
@@ -52,10 +53,10 @@ add_executable(Billimenn.elf
     ${STM32_STARTUP_SOURCE}
     )
 
-target_link_libraries(stm32example.elf ${STM32_LIBRARIES})
+target_link_libraries(Billimenn.elf ${STM32_LIBRARIES})
 
-add_custom_target(stm32example.hex DEPENDS stm32example.elf COMMAND ${CMAKE_OBJCOPY} -Oihex Billimenn.elf Billimenn.hex)
-add_custom_target(stm32example.bin DEPENDS stm32example.elf COMMAND ${CMAKE_OBJCOPY} -Obinary Billimenn.elf Billimenn.bin)
+add_custom_target(Billimenn.hex DEPENDS Billimenn.elf COMMAND ${CMAKE_OBJCOPY} -Oihex Billimenn.elf Billimenn.hex)
+add_custom_target(Billimenn.bin DEPENDS Billimenn.elf COMMAND ${CMAKE_OBJCOPY} -Obinary Billimenn.elf Billimenn.bin)
 
 # If STM32 ST-Link Utility is found, add a make target to program the chip
 if(DEFINED STM32_STLINK_CLI_EXECUTABLE)
