@@ -7,7 +7,7 @@
 # Copyright ISORG 2012 (www.isorg.fr)
 ################################################################################
 
-project(Bilimenn C ASM NONE )
+project(Medula C ASM NONE )
 #project(<projectname> NONE)
 cmake_minimum_required(VERSION 2.8)
 
@@ -16,6 +16,12 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 # Add the 'Modules' folder to the search path for FindXXX.cmake files
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake/Modules)
+
+GET_TARGET_PROPERTY(DOC_TARGET doc TYPE)
+IF(NOT DOC_TARGET)
+  ADD_CUSTOM_TARGET(doc)
+ENDIF(NOT DOC_TARGET)
+
 
 #
 # Setup STM32 variables
@@ -43,7 +49,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DSTM32F207xx -DEE_M24LR64 -DUSE_FULL_ASSERT
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${CMAKE_SOURCE_DIR}/Lkr/stm32f207_flash.ld")
 #set(CMAKE_EXE_LINKER_FLAGS_INIT  "-T${CMAKE_SOURCE_DIR}/lkr/stm32f407vg_flash.ld")
 
-add_executable(Bilimenn.elf
+add_executable(Medula.elf
     Src/main.c
     Src/stm32f2xx_it.c
     Src/stm32f2xx_hal_msp.c
@@ -53,10 +59,10 @@ add_executable(Bilimenn.elf
     ${STM32_STARTUP_SOURCE}
     )
 
-target_link_libraries(Bilimenn.elf ${STM32_LIBRARIES})
+target_link_libraries(Medula.elf ${STM32_LIBRARIES})
 
-add_custom_target(Bilimenn.hex DEPENDS Bilimenn.elf COMMAND ${CMAKE_OBJCOPY} -Oihex Bilimenn.elf Bilimenn.hex)
-add_custom_target(Bilimenn.bin DEPENDS Bilimenn.elf COMMAND ${CMAKE_OBJCOPY} -Obinary Bilimenn.elf Bilimenn.bin)
+add_custom_target(Medula.hex DEPENDS Medula.elf COMMAND ${CMAKE_OBJCOPY} -Oihex Medula.elf Medula.hex)
+add_custom_target(Medula.bin DEPENDS Medula.elf COMMAND ${CMAKE_OBJCOPY} -Obinary Medula.elf Medula.bin)
 
 # If STM32 ST-Link Utility is found, add a make target to program the chip
 if(DEFINED STM32_STLINK_CLI_EXECUTABLE)
@@ -64,8 +70,19 @@ if(DEFINED STM32_STLINK_CLI_EXECUTABLE)
     # -Q : quiet mode, no progress bar
     # -V : Verifies that the programming operation was performed successfully.
     # -P : program file (.hex)
-    set(STLINK_CMD ${STM32_STLINK_CLI_EXECUTABLE} -c SWD UR -P ${CMAKE_BINARY_DIR}/Bilimenn.hex)
-    add_custom_target(program-flash DEPENDS Bilimenn.hex COMMAND ${STLINK_CMD})
+    set(STLINK_CMD ${STM32_STLINK_CLI_EXECUTABLE} -c SWD UR -P ${CMAKE_BINARY_DIR}/Medula.hex)
+    add_custom_target(program-flash DEPENDS Medula.hex COMMAND ${STLINK_CMD})
 endif()
 
+
+
+# add a target to generate Project documentation with Doxygen
+
+  CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/Doc/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doc/Doxyfile @ONLY)
+  ADD_CUSTOM_TARGET(doc_Medula
+                    doxygen ${CMAKE_CURRENT_BINARY_DIR}/Doc/Doxyfile
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                    COMMENT "Generating API documentation with Doxygen" VERBATIM
+  )
+  ADD_DEPENDENCIES(doc doc_Medula)
 
