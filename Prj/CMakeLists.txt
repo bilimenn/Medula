@@ -29,6 +29,8 @@ ENDIF(NOT DOC_TARGET)
 set(STM32_FAMILY "STM32F2xx") 	# Support "STM32F10x", "STM32F2xx", "STM32F4xx"
 set(STM32_LIBRARY_ROOT_DIR "Drv" )
 include(CMake/STM32.cmake)
+set(DRV_DIR "Drv" )
+include(${DRV_DIR}/Drv.cmake)
 
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
@@ -37,7 +39,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/Inc
     ${STM32_INCLUDE_DIRS}
     ${BSP_INCLUDE_DIRS}
-
+	${DRV_INCLUDE_DIRS}
     )
 
 #add_definitions(
@@ -57,6 +59,7 @@ add_executable(Medula.elf
     Src/Traces.c
     ${STM32_SOURCES}
     ${STM32_STARTUP_SOURCE}
+    ${DRV_SOURCES}
     )
 
 target_link_libraries(Medula.elf ${STM32_LIBRARIES})
