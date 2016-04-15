@@ -25,8 +25,16 @@
 #include "Traces.h"
 
 /* Private variables ---------------------------------------------------------*/
+UART_HandleTypeDef huart1;
+UART_HandleTypeDef huart2;
+UART_HandleTypeDef huart3;
 UART_HandleTypeDef huart6;
-
+DMA_HandleTypeDef hdma_usart1_rx;
+DMA_HandleTypeDef hdma_usart1_tx;
+DMA_HandleTypeDef hdma_usart2_rx;
+DMA_HandleTypeDef hdma_usart2_tx;
+DMA_HandleTypeDef hdma_usart3_rx;
+DMA_HandleTypeDef hdma_usart3_tx;
 DMA_HandleTypeDef hdma_usart6_tx;
 /* USER CODE BEGIN 0 */
 uint8_t tucString[]="hello world\n";
@@ -37,8 +45,10 @@ uint8_t tucString[]="hello world\n";
 void SystemClock_Config(void);
 void MX_GPIO_Init(void);
 void MX_DMA_Init(void) ;
-void MX_USART6_UART_Init(void);
-
+static void MX_USART6_UART_Init(void);
+static void MX_USART1_UART_Init(void);
+static void MX_USART2_UART_Init(void);
+static void MX_USART3_UART_Init(void);
 int main(void)
 {
 
@@ -62,13 +72,16 @@ int main(void)
     MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART6_UART_Init();
+  MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
+  MX_USART3_UART_Init();
 
   Trace_Init();
   HAL_Delay(1000);
   Trace_Raw("Medula control board start...\n\r");
   while (1)
   {
-	  Trace_Out();
+	  Trace_Task();
 
   }
   /* USER CODE END 3 */
@@ -84,8 +97,6 @@ int main(void)
 */
 void MX_GPIO_Init(void)
 {
-
-  GPIO_InitTypeDef GPIO_InitStruct;
 
   /* GPIO Ports Clock Enable */
   __GPIOE_CLK_ENABLE();
@@ -115,6 +126,56 @@ void MX_USART6_UART_Init(void)
 
 }
 
+
+/* USART1 init function */
+void MX_USART1_UART_Init(void)
+{
+
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 1000000;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  HAL_HalfDuplex_Init(&huart1);
+  HAL_HalfDuplex_EnableTransmitter( &huart1 );
+
+}
+
+/* USART2 init function */
+void MX_USART2_UART_Init(void)
+{
+
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 1000000;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  HAL_HalfDuplex_Init(&huart2);
+  HAL_HalfDuplex_EnableTransmitter( &huart2 );
+
+}
+
+/* USART3 init function */
+void MX_USART3_UART_Init(void)
+{
+
+  huart3.Instance = USART3;
+  huart3.Init.BaudRate = 1000000;
+  huart3.Init.WordLength = UART_WORDLENGTH_8B;
+  huart3.Init.StopBits = UART_STOPBITS_1;
+  huart3.Init.Parity = UART_PARITY_NONE;
+  huart3.Init.Mode = UART_MODE_TX_RX;
+  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+  HAL_HalfDuplex_Init(&huart3);
+  HAL_HalfDuplex_EnableTransmitter( &huart3 );
+}
 
 /** 
   * Enable DMA controller clock
