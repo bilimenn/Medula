@@ -71,7 +71,7 @@ void Trace_Raw( const char * format, ...  )
 				  HAL_Delay(1);
 				  iTickCount++;
 			  }
-			  Trace_Out();
+			  Trace_Task();
 			  iIndex += vsnprintf (&pcOutputBuffer[iIndex],TRACE_OUTPUT_BUFFER_SIZE-1,format, args);
 			  iIndex += snprintf(&pcOutputBuffer[iIndex],TRACE_OUTPUT_BUFFER_SIZE-iIndex-1,"Trace wait:%dms\r\n",iTickCount);
 		  }
@@ -86,7 +86,7 @@ void Trace_Init_Status( const char *Title , int iStatus )
 		Trace_Raw("%X %d %-40s ["ANSI_COLOR_RED"Error"ANSI_COLOR_RESET"]\r\n",(int)pcOutputBuffer,iIndex,Title);
 	else
 		Trace_Raw("%X %d %-40s ["ANSI_COLOR_GREEN"Ok"ANSI_COLOR_RESET"]\r\n",(int)pcOutputBuffer,iIndex,Title);
-	Trace_Out();
+	Trace_Task();
 }
 
 void Trace_log(  const char *pcModuleName, int iErrorLevel , const char *pcFuncname , int iLine , const char * format, ... )
@@ -101,7 +101,7 @@ void Trace_log(  const char *pcModuleName, int iErrorLevel , const char *pcFuncn
 	va_end (args);
 }
 
-void Trace_Out( void )
+void Trace_Task( void )
 {
 	if( iIndex )
 	{
