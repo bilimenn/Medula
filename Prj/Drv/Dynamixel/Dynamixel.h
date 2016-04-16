@@ -1,4 +1,25 @@
+/**
+  ******************************************************************************
+    Copyright (C) 2016  Gwendal Le Gall
+    This file is part of Medula Firmware.
 
+    Medula Firmware is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Foobar is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+
+  */
+#ifndef DYNAMIXEL_H
+#define DYNAMIXEL_H
 #define TX_BUFER_SIZE 256
 #define RX_BUFER_SIZE 256
 
@@ -30,3 +51,5 @@ unsigned char Dynamixel_Ping_Result( tDynamixelBusHandle *pHandle , unsigned cha
 void Dynamixel_Write_Data_Send( tDynamixelBusHandle *pHandle , unsigned char ucId , unsigned char ucAddress , unsigned char ucLength   , unsigned char *pucData);
 
 int Dynamixel_test( int *piTaskState );
+int Dynamixel_Bus_Scan( int *piTaskDelayInit , uint8_t ucBusindex );
+#endif

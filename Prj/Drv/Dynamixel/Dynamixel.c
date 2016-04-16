@@ -1,3 +1,24 @@
+
+/**
+  ******************************************************************************
+    Copyright (C) 2016  Gwendal Le Gall
+    This file is part of Medula Firmware.
+
+    Medula Firmware is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Foobar is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+
+  */
 #define MODULE_NAME "DYNA"
 #include <string.h>
 #include "stm32f2xx_hal.h"
@@ -14,6 +35,8 @@
 #define RX_INDEX_LENGTH 3
 #define RX_INDEX_ERROR  4
 #define RX_INDEX_PARAM  5
+
+#define PING_TIME_OUT 10
 
 
 #define IO_SERVO_BUS_COUNT 3
@@ -217,10 +240,20 @@ void Dynamixel_Ping_Send( tDynamixelBusHandle *pHandle , unsigned char ucId )
 unsigned char Dynamixel_Ping_Result( tDynamixelBusHandle *pHandle , unsigned char *pucError )
 {
     if( pHandle->ucState != STATE_RX_RESULT)
+    {
+    	if( (HAL_GetTick() - pHandle->uiTickRef ) > PING_TIME_OUT )
+    	{
+    		//time out!
+    		pHandle->ucState = STATE_IDLE;
+    		*pucError = 1;
+    	}
         return 1;
+    }
+
+
     
     pHandle->ucState = STATE_IDLE;
-    *pucError = 0xff;
+    *pucError = 0;
     return 0;
 }
 
