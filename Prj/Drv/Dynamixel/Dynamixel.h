@@ -29,3 +29,4 @@ void Dynamixel_Ping_Send( tDynamixelBusHandle *pHandle , unsigned char ucId );
 unsigned char Dynamixel_Ping_Result( tDynamixelBusHandle *pHandle , unsigned char *pucError );
 void Dynamixel_Write_Data_Send( tDynamixelBusHandle *pHandle , unsigned char ucId , unsigned char ucAddress , unsigned char ucLength   , unsigned char *pucData);
 
+int Dynamixel_test( int *piTaskState );

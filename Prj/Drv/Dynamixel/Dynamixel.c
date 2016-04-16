@@ -248,6 +248,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 	  {
 		  pHandle->ucState = STATE_RX_READ;
 
+		  HAL_HalfDuplex_EnableReceiver(huart);
 		  HAL_UART_Receive_DMA( huart , pHandle->tucRxBuffer , pHandle->ucRXLength);
 	  }
 
