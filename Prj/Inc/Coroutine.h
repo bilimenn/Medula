@@ -30,7 +30,8 @@
 
 #define CR_TIMEOUT_TEST()  ((HAL_GetTick() - iTaskDelayInit)>iTimeoutInit)
 
-#define CR_TASK_EXECUTE(task) if( (task) ) CR_TASK_YELD()
+#define CR_TASK_EXECUTE(task) while( (task) ) { CR_TASK_YELD();} \
+
 
 #define CR_PRINTF( ... ) do  {dprintf(__VA_ARGS__); \
                             CR_TASK_DELAY(2) } while(0)
