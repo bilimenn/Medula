@@ -9,16 +9,16 @@
 #define COROUTINE_H_
 
 
-#define CR_TASK_INIT()       static int iTaskDelayInit=0,iTimeoutInit; switch( *piTaskDelayInit ) { case 0:
-#define CR_TASK_END()        *piTaskDelayInit=-1; default: *piTaskDelayInit=-1;} return 0;
+#define CR_TASK_INIT()       static int iTaskDelayInit=0,iTimeoutInit;(void)iTaskDelayInit;(void)iTimeoutInit; switch( *piTaskState ) { case 0:
+#define CR_TASK_END()        *piTaskState=-1; default: *piTaskState=-1;} return 0;
 #define CR_TASK_YELD()        \
-        *piTaskDelayInit = __LINE__; \
+        *piTaskState = __LINE__; \
         return 1;              \
         case __LINE__:
 
 #define CR_TASK_DELAY( nb_ms )                    \
         iTaskDelayInit= HAL_GetTick();             \
-        *piTaskDelayInit = __LINE__;                     \
+        *piTaskState = __LINE__;                     \
         return 1;                                    \
         case __LINE__:                                 \
         if((HAL_GetTick()-iTaskDelayInit) < nb_ms) \
