@@ -36,7 +36,7 @@
 #define RX_INDEX_ERROR  4
 #define RX_INDEX_PARAM  5
 
-#define PING_TIME_OUT 10
+#define PING_TIME_OUT 3
 
 
 #define IO_SERVO_BUS_COUNT 3

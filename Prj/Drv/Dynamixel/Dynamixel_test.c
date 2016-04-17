@@ -27,6 +27,7 @@
 
 int Dynamixel_test( int *piTaskDelayInit )
 {
+#ifdef PINg_TEST
 	static tDynamixelBusHandle *pDynamixelBus=NULL;
 	static uint8_t tDataBuffer[64];
 	unsigned char ucErr=0;
@@ -46,4 +47,16 @@ int Dynamixel_test( int *piTaskDelayInit )
 	else
 		LOG_APP("Ping done: Error");
 	CR_TASK_END();
+#endif
+	static int iState=0;
+	CR_TASK_INIT();
+	LOG_APP("Test Start");
+	Dynamixel_Init();
+	CR_TASK_EXECUTE(Dynamixel_Bus_Scan(&iState,0));
+	iState=0;
+	CR_TASK_EXECUTE(Dynamixel_Bus_Scan(&iState,1));
+	iState=0;
+	CR_TASK_EXECUTE(Dynamixel_Bus_Scan(&iState,2));
+	CR_TASK_END();
+
 }
