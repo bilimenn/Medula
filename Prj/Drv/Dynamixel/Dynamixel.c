@@ -25,26 +25,19 @@
 #include "Dynamixel.h"
 #include "Log.h"
 
-#define STATE_IDLE      0
-#define STATE_TX        1
-#define STATE_WAITRX    2
-#define STATE_RX_READ   3
-#define STATE_RX_RESULT 4
+
 
 #define RX_INDEX_ID     2
 #define RX_INDEX_LENGTH 3
 #define RX_INDEX_ERROR  4
 #define RX_INDEX_PARAM  5
 
-#define PING_TIME_OUT 3
+
 
 
 #define IO_SERVO_BUS_COUNT 3
 
-/* INTRUCTION */
-#define INSTRUCTION_PING        0x01
-#define INSTRUCTION_READ_DATA   0x02
-#define INSTRUCTION_WRITE_DATA  0x03
+
 
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
@@ -229,33 +222,6 @@ void Dynamixel_Write_Data_Send( tDynamixelBusHandle *pHandle , unsigned char ucI
 }
 
 
-void Dynamixel_Ping_Send( tDynamixelBusHandle *pHandle , unsigned char ucId )
-{
-    Dynamixel_Send_Data_Buffer( pHandle ,ucId , INSTRUCTION_PING , 0 , (unsigned char *) 0 );
-    pHandle->ucRXindex = 0;
-    pHandle->ucRXLength = 6;
-    
-}
-
-unsigned char Dynamixel_Ping_Result( tDynamixelBusHandle *pHandle , unsigned char *pucError )
-{
-    if( pHandle->ucState != STATE_RX_RESULT)
-    {
-    	if( (HAL_GetTick() - pHandle->uiTickRef ) > PING_TIME_OUT )
-    	{
-    		//time out!
-    		pHandle->ucState = STATE_IDLE;
-    		*pucError = 1;
-    	}
-        return 1;
-    }
-
-
-    
-    pHandle->ucState = STATE_IDLE;
-    *pucError = 0;
-    return 0;
-}
 
 
 

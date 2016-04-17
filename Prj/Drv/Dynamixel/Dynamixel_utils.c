@@ -25,8 +25,40 @@
 #include <string.h>
 #include "stm32f2xx_hal.h"
 #include "Dynamixel.h"
+#include "Dynamixel_p.h"
 #include "Log.h"
 #include "Coroutine.h"
+
+#define PING_TIME_OUT 3
+
+void Dynamixel_Ping_Send( tDynamixelBusHandle *pHandle , unsigned char ucId )
+{
+    Dynamixel_Send_Data_Buffer( pHandle ,ucId , INSTRUCTION_PING , 0 , (unsigned char *) 0 );
+    pHandle->ucRXindex = 0;
+    pHandle->ucRXLength = 6;
+
+}
+
+unsigned char Dynamixel_Ping_Result( tDynamixelBusHandle *pHandle , unsigned char *pucError )
+{
+    if( pHandle->ucState != STATE_RX_RESULT)
+    {
+    	if( (HAL_GetTick() - pHandle->uiTickRef ) > PING_TIME_OUT )
+    	{
+    		//time out!
+    		pHandle->ucState = STATE_IDLE;
+    		*pucError = 1;
+    	}
+        return 1;
+    }
+
+
+
+    pHandle->ucState = STATE_IDLE;
+    *pucError = 0;
+    return 0;
+}
+
 
 int Dynamixel_Bus_Scan( int *piTaskDelayInit , uint8_t ucBusindex )
 {
