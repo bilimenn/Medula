@@ -22,10 +22,11 @@
 #include <string.h>
 #include "stm32f2xx_hal.h"
 #include "Dynamixel.h"
+#include "Dynamixel_p.h"
 #include "Log.h"
 #include "Coroutine.h"
 
-int Dynamixel_test( int *piTaskDelayInit )
+int Dynamixel_test( int *piTaskState )
 {
 #ifdef PINg_TEST
 	static tDynamixelBusHandle *pDynamixelBus=NULL;

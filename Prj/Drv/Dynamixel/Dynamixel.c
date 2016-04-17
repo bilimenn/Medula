@@ -23,6 +23,7 @@
 #include <string.h>
 #include "stm32f2xx_hal.h"
 #include "Dynamixel.h"
+#include "Dynamixel_p.h"
 #include "Log.h"
 
 
@@ -86,7 +87,7 @@ tDynamixelBusHandle *Dynamixel_Bus_Get_By_Uart( UART_HandleTypeDef *huart )
 }
 
 
-static unsigned char Dynamixel_Send_Data_Buffer( tDynamixelBusHandle *pHandle , unsigned char ucAddress , unsigned char ucInstruction , unsigned char ucLength, unsigned char *pucData )
+unsigned char Dynamixel_Send_Data_Buffer( tDynamixelBusHandle *pHandle , unsigned char ucAddress , unsigned char ucInstruction , unsigned char ucLength, unsigned char *pucData )
 {
     unsigned char *pucBuffer = &pHandle->tucTxBuffer[0];
     unsigned char ucCeckSum=0;
@@ -265,6 +266,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 		uiFlag = huart->Instance->SR;
 		uiData= huart->Instance->DR;
 		pHandle->ucState = STATE_RX_RESULT;
+		LOG_ERR("Err: %02X Flag:%X uiData: %02X",uiErr,uiFlag,uiData);
 	  }
 }
 

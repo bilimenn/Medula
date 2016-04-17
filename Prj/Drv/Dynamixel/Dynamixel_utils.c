@@ -60,7 +60,7 @@ unsigned char Dynamixel_Ping_Result( tDynamixelBusHandle *pHandle , unsigned cha
 }
 
 
-int Dynamixel_Bus_Scan( int *piTaskDelayInit , uint8_t ucBusindex )
+int Dynamixel_Bus_Scan( int *piTaskState , uint8_t ucBusindex )
 {
 	static tDynamixelBusHandle *pDynamixelBus=NULL;
 	static uint8_t ucIndex;
