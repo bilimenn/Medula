@@ -21,12 +21,15 @@
 #define MODULE_NAME "DYNA"
 #include <string.h>
 #include "stm32f2xx_hal.h"
+#include "Coroutine.h"
 #include "Dynamixel.h"
 #include "Dynamixel_p.h"
 #include "Log.h"
-#include "Coroutine.h"
 
-int Dynamixel_test( int *piTaskState )
+#define IO_SERVO_DATA_OFFSET 		24
+#define IO_SERVO_DATA_SIZE 			25
+
+int Dynamixel_test(  Task_Info_t *pTask )
 {
 #ifdef PINg_TEST
 	static tDynamixelBusHandle *pDynamixelBus=NULL;
@@ -49,15 +52,53 @@ int Dynamixel_test( int *piTaskState )
 		LOG_APP("Ping done: Error");
 	CR_TASK_END();
 #endif
-	static int iState=0;
+#ifdef SCAN_TEST
+	static Task_Info_t State=TASK_INFO_INIT;
 	CR_TASK_INIT();
 	LOG_APP("Test Start");
 	Dynamixel_Init();
-	CR_TASK_EXECUTE(Dynamixel_Bus_Scan(&iState,0));
-	iState=0;
-	CR_TASK_EXECUTE(Dynamixel_Bus_Scan(&iState,1));
-	iState=0;
-	CR_TASK_EXECUTE(Dynamixel_Bus_Scan(&iState,2));
+	CR_TASK_EXECUTE(Dynamixel_Bus_Scan(&State,0));
+	State.iState=0;
+	CR_TASK_EXECUTE(Dynamixel_Bus_Scan(&State,1));
+	State.iState=0;
+	CR_TASK_EXECUTE(Dynamixel_Bus_Scan(&State,2));
 	CR_TASK_END();
-
+#endif
+	//static Task_Info_t State=TASK_INFO_INIT;
+	static tDynamixelBusHandle *pDynamixelBus=NULL;
+	static int iReturn;
+	static unsigned char ucError;
+	static unsigned char tucBuff[128];
+	CR_TASK_INIT();
+	LOG_APP("Test Start");
+	Dynamixel_Init();
+	pDynamixelBus = Dynamixel_Bus_Get_By_Index( 2 );
+	CR_TASK_YELD();
+	while( 1 )
+	{
+		CR_TASK_DELAY(15);
+		ucError=0;
+		Dynamixel_Read_Data_Send(pDynamixelBus, 4 , IO_SERVO_DATA_OFFSET, IO_SERVO_DATA_SIZE);
+		do
+		{
+			CR_TASK_YELD();
+			iReturn = Dynamixel_Read_Data_Result(pDynamixelBus,&ucError,tucBuff);
+		} while (iReturn > 0);
+		if( ucError && ucError!=0xff)
+			ucError=0;
+		ucError=0;
+		while( Dynamixel_Busy(pDynamixelBus))
+		{
+			CR_TASK_YELD();
+		}
+		Dynamixel_Read_Data_Send(pDynamixelBus, 15 , IO_SERVO_DATA_OFFSET, IO_SERVO_DATA_SIZE);
+		do
+		{
+			CR_TASK_YELD();
+			iReturn = Dynamixel_Read_Data_Result(pDynamixelBus,&ucError,tucBuff);
+		} while (iReturn > 0);
+		if( ucError && ucError!=0xff)
+			ucError=0;
+	}
+	CR_TASK_END();
 }
