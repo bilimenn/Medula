@@ -26,7 +26,7 @@
  *  \defgroup TraceGrp Trace Module
  *  @{
  */
-#define USE_FULL_ASSERT 1
+//#define USE_FULL_ASSERT 0
 
 #define TRACE_LOG_APP		0
 #define TRACE_LOG_ERR		1
