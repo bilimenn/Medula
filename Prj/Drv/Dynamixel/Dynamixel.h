@@ -38,6 +38,7 @@ typedef struct
 	unsigned char ucState;
 	unsigned char ucErrorCode;
 	unsigned char *pucCommandParams;
+	TIM_HandleTypeDef    *pTimHandle;
 	uint32_t uiTickRef;
 } tDynamixelBusHandle;
 
@@ -50,6 +51,6 @@ void Dynamixel_Ping_Send( tDynamixelBusHandle *pHandle , unsigned char ucId );
 unsigned char Dynamixel_Ping_Result( tDynamixelBusHandle *pHandle , unsigned char *pucError );
 void Dynamixel_Write_Data_Send( tDynamixelBusHandle *pHandle , unsigned char ucId , unsigned char ucAddress , unsigned char ucLength   , unsigned char *pucData);
 
-int Dynamixel_test( int *piTaskState );
-int Dynamixel_Bus_Scan( int *piTaskDelayInit , uint8_t ucBusindex );
+int Dynamixel_test( Task_Info_t *pTask );
+int Dynamixel_Bus_Scan(  Task_Info_t *pTask , uint8_t ucBusindex );
 #endif

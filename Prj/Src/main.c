@@ -23,7 +23,10 @@
 #include <stdint.h>
 #include "stm32f2xx_hal.h"
 #include "Traces.h"
+#include "Coroutine.h"
 #include "Dynamixel.h"
+#include "IO_Data.h"
+
 
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart1;
@@ -37,6 +40,9 @@ DMA_HandleTypeDef hdma_usart2_tx;
 DMA_HandleTypeDef hdma_usart3_rx;
 DMA_HandleTypeDef hdma_usart3_tx;
 DMA_HandleTypeDef hdma_usart6_tx;
+TIM_HandleTypeDef    TimHandle2;
+TIM_HandleTypeDef    TimHandle3;
+TIM_HandleTypeDef    TimHandle4;
 /* USER CODE BEGIN 0 */
 uint8_t tucString[]="hello world\n";
 
@@ -50,12 +56,15 @@ static void MX_USART6_UART_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_USART3_UART_Init(void);
+static void MX_TimerDynamixel_Init(TIM_HandleTypeDef *pTimeH,TIM_TypeDef *pInstance);
+int Appli( Task_Info_t *piTask  );
+char cFlag=0;
 int main(void)
 {
 
   /* USER CODE BEGIN 1 */
   /* USER CODE END 1 */
-	int iTaskState=0;
+	Task_Info_t TaskState=TASK_INFO_INIT;
   /* MCU Configuration----------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
@@ -76,19 +85,51 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
+  MX_TimerDynamixel_Init(&TimHandle2 , TIM2);
+  MX_TimerDynamixel_Init(&TimHandle3 , TIM3);
+  MX_TimerDynamixel_Init(&TimHandle4 , TIM4);
 
   Trace_Init();
   HAL_Delay(1000);
   Trace_Raw("Medula control board start...\n\r");
+  Dynamixel_Init();
+  IO_Data_init();
+  while (0)
+  {
+	  Dynamixel_test(&TaskState);
+	  Trace_Task();
+
+  }
   while (1)
   {
-	  Dynamixel_test(&iTaskState);
+	  HAL_Delay(10);
+	  IO_Data_Scan_In();
+	  Appli(&TaskState);
 	  Trace_Task();
+	  HAL_Delay(5);
+	  IO_Data_Scan_Out();
 
   }
   /* USER CODE END 3 */
 
 }
+
+
+
+void MX_TimerDynamixel_Init(TIM_HandleTypeDef *pTimeH,TIM_TypeDef *pInstance)
+{
+	uint32_t uwPrescalerValue = 0;
+  /* Compute the prescaler value to have TIM3 counter clock equal to 1000 KHz */
+  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / 1000000) - 1;
+  /* Set TIMx instance */
+  pTimeH->Instance = pInstance;
+  pTimeH->Init.Period = 100 - 1;
+  pTimeH->Init.Prescaler = uwPrescalerValue;
+  pTimeH->Init.ClockDivision = 0;
+  pTimeH->Init.CounterMode = TIM_COUNTERMODE_UP;
+  HAL_TIM_Base_Init(pTimeH);
+}
+
 
 /** Configure pins as
         * Analog
@@ -99,6 +140,7 @@ int main(void)
 */
 void MX_GPIO_Init(void)
 {
+	GPIO_InitTypeDef GPIO_InitStruct;
 
   /* GPIO Ports Clock Enable */
   __GPIOE_CLK_ENABLE();
@@ -110,6 +152,23 @@ void MX_GPIO_Init(void)
   __GPIOB_CLK_ENABLE();
   __GPIOD_CLK_ENABLE();
   __GPIOC_CLK_ENABLE();
+  //debug pio: PA10 PA8
+  GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_8;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_WritePin(GPIOA,GPIO_PIN_10,GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOA,GPIO_PIN_8,GPIO_PIN_SET);
+
+  //debug pio: PC8 PC6
+  GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_8;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HAL_GPIO_WritePin(GPIOC,GPIO_PIN_6,GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOC,GPIO_PIN_8,GPIO_PIN_SET);
 }
 
 /* USART6 init function */
@@ -214,6 +273,10 @@ void MX_DMA_Init(void)
   HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_0);
   HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
+  /* Sets the priority grouping field */
+  HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_0);
+  HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);
 }
 
 /** System Clock Configuration
@@ -272,8 +335,10 @@ void assert_failed(uint8_t* file, uint32_t line)
     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
   //Trace_Print("###################################################");
+  return;
 	while(1)
 	{
+	  Trace_Task();
 		iCpt++;
 	}
 

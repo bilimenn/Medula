@@ -34,8 +34,9 @@
 #define STATE_IDLE      0
 #define STATE_TX        1
 #define STATE_WAITRX    2
-#define STATE_RX_READ   3
-#define STATE_RX_RESULT 4
+#define STATE_RX_READ   4
+#define STATE_RX_RESULT 8
+#define STATE_BUS_WAIT  16
 unsigned char Dynamixel_Send_Data_Buffer( tDynamixelBusHandle *pHandle , unsigned char ucAddress , unsigned char ucInstruction , unsigned char ucLength, unsigned char *pucData );
 
 #endif /* DYNAMIXEL_P_H_ */

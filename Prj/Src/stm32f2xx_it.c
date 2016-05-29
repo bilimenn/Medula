@@ -46,11 +46,50 @@ extern DMA_HandleTypeDef hdma_usart3_tx;
 extern DMA_HandleTypeDef hdma_usart3_rx;
 extern DMA_HandleTypeDef hdma_usart6_tx;
 extern UART_HandleTypeDef huart6;
+extern TIM_HandleTypeDef    TimHandle2;
+extern TIM_HandleTypeDef    TimHandle3;
+extern TIM_HandleTypeDef    TimHandle4;
 
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
 
+/**
+  * @brief  This function handles TIM interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIM2_IRQHandler(void)
+{
+  HAL_GPIO_WritePin(GPIOA,GPIO_PIN_8,GPIO_PIN_RESET);
+  HAL_TIM_IRQHandler(&TimHandle2);
+  HAL_GPIO_WritePin(GPIOA,GPIO_PIN_8,GPIO_PIN_SET);
+}
+
+/**
+  * @brief  This function handles TIM interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIM3_IRQHandler(void)
+{
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_8,GPIO_PIN_RESET);
+  HAL_TIM_IRQHandler(&TimHandle3);
+  HAL_GPIO_WritePin(GPIOC,GPIO_PIN_8,GPIO_PIN_SET);
+}
+
+/**
+  * @brief  This function handles TIM interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIM4_IRQHandler(void)
+{
+  HAL_GPIO_WritePin(GPIOC,GPIO_PIN_6,GPIO_PIN_RESET);
+  HAL_TIM_IRQHandler(&TimHandle4);
+  HAL_GPIO_WritePin(GPIOC,GPIO_PIN_6,GPIO_PIN_SET);
+
+}
 
 void HAL_DMA_IRQHandler1_1(DMA_HandleTypeDef *hdma);
 
@@ -344,6 +383,187 @@ void HAL_DMA_IRQHandler1_1(DMA_HandleTypeDef *hdma)
   }
 }
 
+/******************************************************************************/
+/*            Cortex-M3 Processor Exceptions Handlers                         */
+/******************************************************************************/
+
+/**
+  * @brief  This function handles NMI exception.
+  * @param  None
+  * @retval None
+  */
+void NMI_Handler(void)
+{
+  /* Go to infinite loop when Hard Fault exception occurs */
+  while (1)
+  {
+	  HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_10);
+  }
+}
+
+
+void HardFault_HandlerC(unsigned long *hardfault_args);
+/**
+  * @brief  This function handles Hard Fault exception.
+  * @param  None
+  * @retval None
+  */
+void HardFault_Handler(void)
+{
+
+
+    __asm volatile
+    (
+        " tst lr, #4                                                \n"
+        " ite eq                                                    \n"
+        " mrseq r0, msp                                             \n"
+        " mrsne r0, psp                                             \n"
+        " ldr r1, [r0, #24]                                         \n"
+        " ldr r2, handler2_address_const                            \n"
+        " bx r2                                                     \n"
+        " handler2_address_const: .word prvGetRegistersFromStack    \n"
+    );
+  /* Go to infinite loop when Hard Fault exception occurs */
+  while (1)
+  {
+
+  }
+}
+
+void prvGetRegistersFromStack(unsigned long *hardfault_args)
+{
+	volatile unsigned long stacked_r0 ;
+	        volatile unsigned long stacked_r1 ;
+	        volatile unsigned long stacked_r2 ;
+	        volatile unsigned long stacked_r3 ;
+	        volatile unsigned long stacked_r12 ;
+	        volatile unsigned long stacked_lr ;
+	        volatile unsigned long stacked_pc ;
+	        volatile unsigned long stacked_psr ;
+	        volatile unsigned long _CFSR ;
+	        volatile unsigned long _HFSR ;
+	        volatile unsigned long _DFSR ;
+	        volatile unsigned long _AFSR ;
+	        volatile unsigned long _BFAR ;
+	        volatile unsigned long _MMAR ;
+
+	        stacked_r0 = ((unsigned long)hardfault_args[0]) ;
+	        stacked_r1 = ((unsigned long)hardfault_args[1]) ;
+	        stacked_r2 = ((unsigned long)hardfault_args[2]) ;
+	        stacked_r3 = ((unsigned long)hardfault_args[3]) ;
+	        stacked_r12 = ((unsigned long)hardfault_args[4]) ;
+	        stacked_lr = ((unsigned long)hardfault_args[5]) ;
+	        stacked_pc = ((unsigned long)hardfault_args[6]) ;
+	        stacked_psr = ((unsigned long)hardfault_args[7]) ;
+
+	        // Configurable Fault Status Register
+	        // Consists of MMSR, BFSR and UFSR
+	        _CFSR = (*((volatile unsigned long *)(0xE000ED28))) ;
+
+	        // Hard Fault Status Register
+	        _HFSR = (*((volatile unsigned long *)(0xE000ED2C))) ;
+
+	        // Debug Fault Status Register
+	        _DFSR = (*((volatile unsigned long *)(0xE000ED30))) ;
+
+	        // Auxiliary Fault Status Register
+	        _AFSR = (*((volatile unsigned long *)(0xE000ED3C))) ;
+
+	        // Read the Fault Address Registers. These may not contain valid values.
+	        // Check BFARVALID/MMARVALID to see if they are valid values
+	        // MemManage Fault Address Register
+	        _MMAR = (*((volatile unsigned long *)(0xE000ED34))) ;
+	        // Bus Fault Address Register
+	        _BFAR = (*((volatile unsigned long *)(0xE000ED38))) ;
+
+    /* When the following line is hit, the variables contain the register values. */
+    for( ;; )
+    	HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_10);
+}
+
+/**
+  * @brief  This function handles Memory Manage exception.
+  * @param  None
+  * @retval None
+  */
+void MemManage_Handler(void)
+{
+  /* Go to infinite loop when Memory Manage exception occurs */
+  while (1)
+  {
+	  HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_10);
+  }
+}
+
+/**
+  * @brief  This function handles Bus Fault exception.
+  * @param  None
+  * @retval None
+  */
+void BusFault_Handler(void)
+{
+  /* Go to infinite loop when Bus Fault exception occurs */
+  while (1)
+  {
+	  HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_10);
+  }
+}
+
+/**
+  * @brief  This function handles Usage Fault exception.
+  * @param  None
+  * @retval None
+  */
+void UsageFault_Handler(void)
+{
+  /* Go to infinite loop when Usage Fault exception occurs */
+  while (1)
+  {
+	  HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_10);
+  }
+}
+
+/**
+  * @brief  This function handles SVCall exception.
+  * @param  None
+  * @retval None
+  */
+void SVC_Handler(void)
+{
+	  /* Go to infinite loop when Bus Fault exception occurs */
+	  while (1)
+	  {
+		  HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_10);
+	  }
+}
+
+/**
+  * @brief  This function handles Debug Monitor exception.
+  * @param  None
+  * @retval None
+  */
+void DebugMon_Handler(void)
+{
+	  /* Go to infinite loop when Bus Fault exception occurs */
+	  while (1)
+	  {
+		  HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_10);
+	  }
+}
+
+/**
+  * @brief  This function handles PendSVC exception.
+  * @param  None
+  * @retval None
+  */
+void PendSV_Handler(void)
+{
+	  /* Go to infinite loop when Bus Fault exception occurs */
+	  while (1)
+	  {
+		  HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_10);
+	  }
+}
 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

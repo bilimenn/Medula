@@ -50,6 +50,58 @@ extern DMA_HandleTypeDef hdma_usart3_tx;
 
 extern DMA_HandleTypeDef hdma_usart6_tx;
 
+extern TIM_HandleTypeDef    TimHandle2;
+extern TIM_HandleTypeDef    TimHandle3;
+extern TIM_HandleTypeDef    TimHandle4;
+/**
+  * @brief TIM MSP Initialization
+  *        This function configures the hardware resources used in this example:
+  *           - Peripheral's clock enable
+  *           - Peripheral's GPIO Configuration
+  * @param htim: TIM handle pointer
+  * @retval None
+  */
+void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
+{
+  if( htim == &TimHandle2)
+  {
+	  /* TIMx Peripheral clock enable */
+	  __TIM2_CLK_ENABLE();
+
+	  HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_0);
+	  /*##-2- Configure the NVIC for TIMx ########################################*/
+	  /* Set Interrupt Group Priority */
+	  HAL_NVIC_SetPriority(TIM2_IRQn, 1, 0);
+
+	  /* Enable the TIMx global Interrupt */
+	  HAL_NVIC_EnableIRQ(TIM2_IRQn);
+  } else if( htim == &TimHandle3)
+  {
+	  /* TIMx Peripheral clock enable */
+	  __TIM3_CLK_ENABLE();
+
+	  HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_0);
+	  /*##-2- Configure the NVIC for TIMx ########################################*/
+	  /* Set Interrupt Group Priority */
+	  HAL_NVIC_SetPriority(TIM3_IRQn, 2, 0);
+
+	  /* Enable the TIMx global Interrupt */
+	  HAL_NVIC_EnableIRQ(TIM3_IRQn);
+  } else if( htim == &TimHandle4)
+  {
+	  /* TIMx Peripheral clock enable */
+	  __TIM4_CLK_ENABLE();
+
+	  HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_0);
+	  /*##-2- Configure the NVIC for TIMx ########################################*/
+	  /* Set Interrupt Group Priority */
+	  HAL_NVIC_SetPriority(TIM4_IRQn, 3, 0);
+
+	  /* Enable the TIMx global Interrupt */
+	  HAL_NVIC_EnableIRQ(TIM4_IRQn);
+  }
+}
+
 
 void HAL_UART_MspInit(UART_HandleTypeDef* huart)
 {
@@ -64,7 +116,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     PA9     ------> USART1_TX
     */
     GPIO_InitStruct.Pin = GPIO_PIN_9;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
@@ -115,7 +167,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     PA2     ------> USART2_TX
     */
     GPIO_InitStruct.Pin = GPIO_PIN_2;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
@@ -164,7 +216,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     PB10     ------> USART3_TX
     */
     GPIO_InitStruct.Pin = GPIO_PIN_10;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF7_USART3;
