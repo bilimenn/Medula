@@ -24,10 +24,10 @@
 #define MODULE_NAME "DYNA"
 #include <string.h>
 #include "stm32f2xx_hal.h"
+#include "Coroutine.h"
 #include "Dynamixel.h"
 #include "Dynamixel_p.h"
 #include "Log.h"
-#include "Coroutine.h"
 
 #define PING_TIME_OUT 3
 
@@ -60,7 +60,7 @@ unsigned char Dynamixel_Ping_Result( tDynamixelBusHandle *pHandle , unsigned cha
 }
 
 
-int Dynamixel_Bus_Scan( int *piTaskState , uint8_t ucBusindex )
+int Dynamixel_Bus_Scan(  Task_Info_t *pTask , uint8_t ucBusindex )
 {
 	static tDynamixelBusHandle *pDynamixelBus=NULL;
 	static uint8_t ucIndex;
