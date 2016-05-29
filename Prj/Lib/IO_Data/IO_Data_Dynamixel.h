@@ -37,8 +37,8 @@ uint16_t IO_Data_Servo_Read_Word( uint8_t ucIndex  , uint8_t ucOffset);
 void  IO_Data_Servo_Write_Byte( uint8_t ucIndex  , uint8_t ucOffset , uint8_t ucData);
 void  IO_Data_Servo_Write_Word( uint8_t ucIndex  , uint8_t ucOffset , uint16_t uiData);
  void IO_Data_Servo_init( void );
- int IO_Data_Servo_Scan_In_Process( int *piFsmState );
- int IO_Data_Servo_Scan_Out_Process( int *piFsmState  );
+ int IO_Data_Servo_Scan_In_Process( Task_Info_t *pTask );
+ int IO_Data_Servo_Scan_Out_Process( Task_Info_t *pTask );
 
 
 
