@@ -60,6 +60,7 @@ add_executable(Medula.elf
     Src/stm32f2xx_hal_msp.c
     Src/system_stm32f2xx.c
     Src/Traces.c
+    Src/Appli.c
     ${STM32_SOURCES}
     ${STM32_STARTUP_SOURCE}
     ${DRV_SOURCES}
